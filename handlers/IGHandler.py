@@ -1,4 +1,4 @@
-from ActionHandler import ActionHandler
+from .ActionHandler import ActionHandler
 
 import json
 import codecs

@@ -1,5 +1,7 @@
 from flask import Blueprint, Response, request
-from IGHandler import IGHandler
+import json
+
+from .IGHandler import IGHandler
 
 api = Blueprint( "APIHandler", __name__ )
 
@@ -10,7 +12,7 @@ class APIHandler( ):
 
 	@api.route( '/enable-live', methods = [ 'POST' ] )
 	def enable_live( ):
-		data = request.json
+		data = json.loads( request.data )
 
 		IGHandler.enable_live( data )
 
@@ -18,7 +20,7 @@ class APIHandler( ):
 
 	@api.route( '/disable-live', methods = [ 'POST' ] )
 	def disable_live( ):
-		data = request.json
+		data = json.loads( request.data )
 
 		IGHandler.disable_live( data )
 
