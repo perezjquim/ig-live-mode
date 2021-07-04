@@ -5,7 +5,7 @@ import time
 
 class ActionHandler( ):
 
-	SLEEP_TIME_SECS = 0.5
+	SLEEP_TIME_SECS = 0.1
 
 	def on_action( api, args ):
 		mode = args[ 'mode' ]
