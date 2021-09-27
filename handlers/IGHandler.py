@@ -29,27 +29,16 @@ class IGHandler( ):
     __cached_settings = { }
 
     def get_user_avatar( user_name ):
-        time.sleep( ActionHandler.SLEEP_TIME_SECS )
-
-        user_info = IGHandler._get_user_info( user_name )
+        user_info = ActionHandler.get_user_info( user_name )
         user_avatar = user_info[ 'profile_pic_url_hd' ]
 
         return user_avatar
 
     def get_user_full_name( user_name ):
-        time.sleep( ActionHandler.SLEEP_TIME_SECS )
-
-        user_info = IGHandler._get_user_info( user_name )
+        user_info = ActionHandler.get_user_info( user_name )
         user_full_name = user_info[ 'full_name' ]
 
         return user_full_name
-
-    def _get_user_info( user_name ):
-        time.sleep( ActionHandler.SLEEP_TIME_SECS )
-
-        client = IGCustomWebClient( auto_patch = True, drop_incompat_keys = True )
-        user_info = client.user_info2( user_name )
-        return user_info
 
     def enable_live( data ):
         api = IGHandler._login( data )

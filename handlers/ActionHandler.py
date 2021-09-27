@@ -1,11 +1,20 @@
 import os
 import json
-
 import time
+import requests
 
 class ActionHandler( ):
 
 	SLEEP_TIME_SECS = 0.1
+
+    	def get_user_info( user_name ):
+		ActionHandler._sleep( )
+
+	        request = requests.get( 'https://www.instagram.com/{}/?__a=1'.format( user_name ) )
+	        result = request.json( )
+
+	        user_info = result[ 'graphql' ][ 'user' ]
+	        return user_info	
 
 	def on_action( api, args ):
 		mode = args[ 'mode' ]
