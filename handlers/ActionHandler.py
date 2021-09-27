@@ -10,7 +10,8 @@ class ActionHandler( ):
 	def get_user_info( user_name ):
 		ActionHandler._sleep( )
 
-		request = requests.get( 'https://www.instagram.com/{}/?__a=1'.format( user_name ) )
+		headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+		request = requests.get( 'https://www.instagram.com/{}/?__a=1'.format( user_name ), headers = headers )
 		result = request.json( )
 
 		user_info = result[ 'graphql' ][ 'user' ]
