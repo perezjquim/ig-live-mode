@@ -12,6 +12,7 @@ try:
         Client, ClientError, ClientLoginError,
         ClientCookieExpiredError, ClientLoginRequiredError,
         __version__ as client_version)
+    from .IGCustomWebClient import IGCustomWebClient
 except ImportError:
     import sys
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -19,11 +20,17 @@ except ImportError:
         Client, ClientError, ClientLoginError,
         ClientCookieExpiredError, ClientLoginRequiredError,
         __version__ as client_version)
+    from .IGCustomWebClient import IGCustomWebClient    
 
 class IGHandler( ):
 
     __current_user = ''
     __cached_settings = { }
+
+    def get_user_info( user_name ):
+        client = IGCustomWebClient( auto_patch = True, drop_incompat_keys = True )
+        user_info = client.user_info2( user_name )
+        return user_info
 
     def enable_live( data ):
         api = IGHandler._login( data )
