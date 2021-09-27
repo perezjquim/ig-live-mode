@@ -13,7 +13,6 @@ try:
         Client, ClientError, ClientLoginError,
         ClientCookieExpiredError, ClientLoginRequiredError,
         __version__ as client_version)
-    from .IGCustomWebClient import IGCustomWebClient
 except ImportError:
     import sys
     sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
@@ -21,7 +20,6 @@ except ImportError:
         Client, ClientError, ClientLoginError,
         ClientCookieExpiredError, ClientLoginRequiredError,
         __version__ as client_version)
-    from .IGCustomWebClient import IGCustomWebClient    
 
 class IGHandler( ):
 
