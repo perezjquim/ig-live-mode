@@ -25,3 +25,11 @@ class APIHandler( ):
 		IGHandler.disable_live( data )
 
 		return Response( 'OK' )		
+
+	@api.route( '/get-user-avatar/<string:user_name>', methods = [ 'GET' ] )
+	def get_user_avatar( user_name ):
+		return IGHandler.get_user_avatar( user_name )		
+
+	@api.route( '/get-user-full-name/<string:user_name>', methods = [ 'GET' ] )
+	def get_user_full_name( user_name ):
+		return IGHandler.get_user_full_name( user_name )				
