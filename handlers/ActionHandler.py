@@ -11,10 +11,12 @@ class ActionHandler( ):
 		ActionHandler._sleep( )
 
 		headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-		request = requests.get( 'https://www.instagram.com/{}/?__a=1'.format( user_name ), headers = headers )
+		request_url = 'https://www.instagram.com/web/search/topsearch/?context=blended&query={}'
+		request = requests.get( request_url.format( user_name ), headers = headers )
 		result = request.json( )
 
-		user_info = result[ 'graphql' ][ 'user' ]
+		user_info = result[ 'users' ][ 0 ][ 'user' ]
+
 		return user_info	
 
 	def on_action( api, args ):
