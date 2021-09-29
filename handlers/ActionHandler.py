@@ -10,12 +10,15 @@ class ActionHandler( ):
 	def get_user_info( user_name ):
 		ActionHandler._sleep( )
 
-		headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
-		request_url = 'https://www.instagram.com/web/search/topsearch/?context=blended&query={}'
+		headers = { 
+			'Accept': 'application/json', 
+			'Content-Type': 'application/json', 
+			'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.93 Safari/537.36' 
+		}
+		request_url = 'https://www.instagram.com/{}/channel/?__a=1'
 		request = requests.get( request_url.format( user_name ), headers = headers )
 		result = request.json( )
-
-		user_info = result[ 'users' ][ 0 ][ 'user' ]
+		user_info = result[ 'graphql' ][ 'user' ]
 
 		return user_info	
 

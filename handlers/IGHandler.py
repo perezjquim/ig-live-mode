@@ -26,17 +26,9 @@ class IGHandler( ):
     __current_user = ''
     __cached_settings = { }
 
-    def get_user_avatar( user_name ):
+    def get_user_info( user_name ):
         user_info = ActionHandler.get_user_info( user_name )
-        user_avatar = user_info[ 'profile_pic_url' ]
-
-        return user_avatar
-
-    def get_user_full_name( user_name ):
-        user_info = ActionHandler.get_user_info( user_name )
-        user_full_name = user_info[ 'full_name' ]
-
-        return user_full_name
+        return user_info
 
     def enable_live( data ):
         api = IGHandler._login( data )
