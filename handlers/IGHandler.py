@@ -28,7 +28,7 @@ class IGHandler( ):
 
     def get_user_avatar( user_name ):
         user_info = ActionHandler.get_user_info( user_name )
-        user_avatar = user_info[ 'profile_pic_url_hd' ]
+        user_avatar = user_info[ 'profile_pic_url' ]
 
         return user_avatar
 
