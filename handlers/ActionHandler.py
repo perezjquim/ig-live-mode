@@ -2,7 +2,6 @@ import os
 import json
 import time
 import requests
-from fake_useragent import UserAgent
 
 class ActionHandler( ):
 
@@ -11,12 +10,12 @@ class ActionHandler( ):
 	def get_user_info( user_name ):
 		ActionHandler._sleep( )
 
-		ua = UserAgent( )
-		headers = { 
-			'Accept': 'application/json', 
-			'Content-Type': 'application/json', 
-			'User-Agent': ua.chrome
-		}
+		headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0', 
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+        'Connection': 'keep-alive',
+        'Upgrade-Insecure-Requests': '1',
+        'Cache-Control': 'max-age=0'}
 		request_url = 'https://www.instagram.com/{}/channel/?__a=1'
 		request = requests.get( request_url.format( user_name ), headers = headers )
 		result = request.json( )
