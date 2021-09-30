@@ -10,12 +10,17 @@ class ActionHandler( ):
 	def get_user_info( user_name ):
 		ActionHandler._sleep( )
 
-		headers = {'User-Agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:86.0) Gecko/20100101 Firefox/86.0', 
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-        'Connection': 'keep-alive',
-        'Upgrade-Insecure-Requests': '1',
-        'Cache-Control': 'max-age=0'}
+		headers = {
+			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+			'accept-encoding': 'gzip, deflate, br',
+			'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
+			'cache-control': 'max-age=0',
+			'sec-fetch-mode': 'navigate',
+			'sec-fetch-site': 'none',
+			'sec-fetch-user': '?1',
+			'upgrade-insecure-requests': '1',
+			'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/79.0.3945.79 Chrome/79.0.3945.79 Safari/537.36'
+		}
 		request_url = 'https://www.instagram.com/{}/channel/?__a=1'
 		request = requests.get( request_url.format( user_name ), headers = headers )
 		result = request.json( )
