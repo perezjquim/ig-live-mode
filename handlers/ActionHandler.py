@@ -14,20 +14,16 @@ class ActionHandler( ):
 
 		ua = UserAgent( )
 
-		request_url = "https://storiesdown.com/users/{}".format( user_name )
+		request_url = "https://www.anonigviewer.com/profile.php?u={}".format( user_name )
 		request_headers = {
-			'user-agent': ua.random
+			'User-Agent': ua.random
 		}
 		request = requests.get( request_url, headers = request_headers )
 		response_text = request.text
 
-		print( response_text )
-
-		user_info_str = re.findall( '<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>', response_text )[ 0 ]
+		user_info_str = re.findall( 'StoreSearch\(([\s\S]*?)\);', response_text )[ 0 ]
 
 		user_info = json.loads( user_info_str )
-
-		user_info = user_info[ 'props' ][ 'pageProps' ][ 'user' ][ 'info' ]
 
 		return user_info	
 
