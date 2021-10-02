@@ -2,6 +2,8 @@ import os
 import json
 import time
 import requests
+import re
+from fake_useragent import UserAgent
 
 class ActionHandler( ):
 
@@ -10,21 +12,22 @@ class ActionHandler( ):
 	def get_user_info( user_name ):
 		ActionHandler._sleep( )
 
-		headers = {
-			'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-			'accept-encoding': 'gzip, deflate, br',
-			'accept-language': 'pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7',
-			'cache-control': 'max-age=0',
-			'sec-fetch-mode': 'navigate',
-			'sec-fetch-site': 'none',
-			'sec-fetch-user': '?1',
-			'upgrade-insecure-requests': '1',
-			'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/79.0.3945.79 Chrome/79.0.3945.79 Safari/537.36'
+		ua = UserAgent( )
+
+		request_url = "https://storiesdown.com/users/{}".format( user_name )
+		request_headers = {
+			'user-agent': ua.random
 		}
-		request_url = 'https://www.instagram.com/{}/channel/?__a=1'
-		request = requests.get( request_url.format( user_name ), headers = headers )
-		result = request.json( )
-		user_info = result[ 'graphql' ][ 'user' ]
+		request = requests.get( request_url, headers = request_headers )
+		response_text = request.text
+
+		print( response_text )
+
+		user_info_str = re.search( '<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>', response_text ).group( 1 )
+
+		user_info = json.loads( user_info_str )
+
+		user_info = user_info[ 'props' ][ 'pageProps' ][ 'user' ][ 'info' ]
 
 		return user_info	
 
