@@ -3,6 +3,7 @@ import json
 import time
 import requests
 import re
+from flask import jsonify
 from fake_useragent import UserAgent
 
 class ActionHandler( ):
@@ -25,7 +26,7 @@ class ActionHandler( ):
 
 		user_info = json.loads( user_info_str )
 
-		return user_info	
+		return jsonify( user_info )
 
 	def on_action( api, args ):
 		mode = args[ 'mode' ]
