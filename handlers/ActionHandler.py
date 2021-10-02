@@ -5,6 +5,7 @@ import requests
 import re
 from flask import jsonify
 from fake_useragent import UserAgent
+import base64
 
 class ActionHandler( ):
 
@@ -19,12 +20,24 @@ class ActionHandler( ):
 		request_headers = {
 			'User-Agent': ua.random
 		}
-		request = requests.get( request_url, headers = request_headers )
-		response_text = request.text
+		response = requests.get( request_url, headers = request_headers )
+		response_text = response.text
 
 		user_info_str = re.findall( 'StoreSearch\(([\s\S]*?)\);', response_text )[ 0 ]
 
 		user_info = json.loads( user_info_str )
+
+		profile_pic_url = user_info[ 'profile_pic_url' ]
+		profile_pic_response = requests.get( profile_pic_url, verify = False )
+
+		profile_pic_content_type = profile_pic_response.headers[ 'Content-Type' ]
+		profile_pic_content_b64 = base64.b64encode( profile_pic_response.content ).decode("utf-8")
+		profile_pic_content = "data:{};base64,{}".format(
+			profile_pic_response.headers[ 'Content-Type' ],
+			profile_pic_content_b64
+		) 
+
+		user_info[ 'profile_pic_content' ] = profile_pic_content	
 
 		return jsonify( user_info )
 
