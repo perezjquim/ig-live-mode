@@ -23,7 +23,7 @@ class ActionHandler( ):
 
 		print( response_text )
 
-		user_info_str = re.search( '<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>', response_text ).group( 1 )
+		user_info_str = re.findall( '<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>', response_text )[ 0 ]
 
 		user_info = json.loads( user_info_str )
 
