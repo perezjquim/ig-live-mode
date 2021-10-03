@@ -23,31 +23,40 @@ class ActionHandler( ):
 
 		user_info = { }
 
-		user_info_search = re.findall( 'StoreSearch\(([\s\S]*?)\);', response_text )
-		if user_info_search and len( user_info_search ) > 0:
+		user_info_json_search = re.findall( 'StoreSearch\(([\s\S]*?)\);', response_text )
+		if len( user_info_json_search ) == 0:
+
+			user_info_img_search = re.findall( '<img class="user-img" src="([\s\S]*?)">', response_text )
+			if len( user_info_img_search ) > 0:
+				user_info[ 'profile_pic_url' ] = user_info_img_search[ 0 ]
+
+			user_info_full_name_search = re.findall( '<title>([\s\S]*?)\(@', response_text )
+			if len( user_info_full_name_search ) > 0:
+				user_info[ 'full_name' ] = user_info_full_name_search[ 0 ]		
+
+		else:		
 
 			user_info_str = user_info_search[ 0 ]
-
 			user_info = json.loads( user_info_str )
 
-			profile_pic_url = user_info[ 'profile_pic_url' ]
+		profile_pic_url = user_info[ 'profile_pic_url' ]
 
-			if profile_pic_url == '/img/no-avatar.png':
-				
-				pass
+		if profile_pic_url == '/img/no-avatar.png':
 
-			else:
+			pass
 
-				profile_pic_response = requests.get( profile_pic_url, verify = False )
+		else:
 
-				profile_pic_content_type = profile_pic_response.headers[ 'Content-Type' ]
-				profile_pic_content_b64 = base64.b64encode( profile_pic_response.content ).decode("utf-8")
-				profile_pic_content = "data:{};base64,{}".format(
-					profile_pic_response.headers[ 'Content-Type' ],
-					profile_pic_content_b64
-				) 
+			profile_pic_response = requests.get( profile_pic_url, verify = False )
 
-				user_info[ 'profile_pic_content' ] = profile_pic_content	
+			profile_pic_content_type = profile_pic_response.headers[ 'Content-Type' ]
+			profile_pic_content_b64 = base64.b64encode( profile_pic_response.content ).decode("utf-8")
+			profile_pic_content = "data:{};base64,{}".format(
+				profile_pic_response.headers[ 'Content-Type' ],
+				profile_pic_content_b64
+			) 
+
+			user_info[ 'profile_pic_content' ] = profile_pic_content	
 
 		return jsonify( user_info )
 
