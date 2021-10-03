@@ -61,13 +61,13 @@ class ActionHandler( ):
 
 		if mode == 'ENABLE-LIVE':
 			print( 'Blocking..' )
-			live_whitelist = data[ 'live_whitelist' ].split( '\n' )
+			live_whitelist = [ p[ 'user_name' ] for p in data[ 'live_whitelist' ] ]
 			ActionHandler.enable_live( api, followers, blocked_profiles, live_whitelist )
 			print( 'Blocking.. done!' )
 
 		elif mode == 'DISABLE-LIVE':
 			print( 'Unblocking..' )	
-			general_blacklist = data[ 'general_blacklist' ].split( '\n' )
+			general_blacklist = [ p[ 'user_name' ] for p in data[ 'general_blacklist' ] ]
 			ActionHandler.disable_live( api, followers, blocked_profiles, general_blacklist )
 			print( 'Unblocking.. done!' )			
 
