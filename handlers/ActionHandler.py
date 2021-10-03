@@ -36,7 +36,7 @@ class ActionHandler( ):
 
 		else:		
 
-			user_info_str = user_info_search[ 0 ]
+			user_info_str = user_info_json_search[ 0 ]
 			user_info = json.loads( user_info_str )
 
 		profile_pic_url = user_info[ 'profile_pic_url' ]
