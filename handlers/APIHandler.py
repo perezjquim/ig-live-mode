@@ -31,7 +31,7 @@ class APIHandler( ):
 	@api.route( '/get-user-info/<string:user_name>', methods = [ 'GET' ] )
 	def get_user_info( user_name ):
                 user_info = { }
-                if APIHandler.__user_info_cache.has_key( user_name ):
+                if user_name in APIHandler.__user_info_cache:
                         user_info = APIHandler.__user_info_cache[ user_name ]
                 else:
                         user_info = IGHandler.get_user_info( user_name )
