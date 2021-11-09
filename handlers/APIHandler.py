@@ -14,19 +14,48 @@ class APIHandler( ):
 
 	@api.route( '/enable-live', methods = [ 'POST' ] )
 	def enable_live( ):
-		data = json.loads( request.data )
+		cookies = request.cookies
+		ig = IGHandler( cookies = cookies )
+		ig.authenticate( )
 
-		IGHandler.enable_live( data )
+		data = json.loads( request.data )		
+		ig.enable_live( data )
 
 		return Response( 'OK' )
 
 	@api.route( '/disable-live', methods = [ 'POST' ] )
 	def disable_live( ):
+		cookies = request.cookies
+		ig = IGHandler( cookies = cookies )
+		ig.authenticate( )
+
+		data = json.loads( request.data )		
+		ig.enable_live( data )
+
+		return Response( 'OK' )	
+
+	@api.route( '/login', methods = [ 'POST' ] )
+	def login( ):
 		data = json.loads( request.data )
 
-		IGHandler.disable_live( data )
+		auth = data[ 'auth' ]
 
-		return Response( 'OK' )		
+		ig = IGHandler( auth = auth )
+		ig.authenticate( )
+
+		cached_settings = ig.get_settings( )
+		cached_settings_str = json.dumps( cached_settings )
+
+		response = Response( 'OK' )
+		response.set_cookie( 
+			key = 'ig_settings', 
+			value = cached_settings_str,
+			max_age = 60 * 60 * 24 * 365,
+			secure = True, 
+			httponly = True
+		)
+
+		return response	
 
 	@api.route( '/get-user-info/<string:user_name>', methods = [ 'GET' ] )
 	def get_user_info( user_name ):

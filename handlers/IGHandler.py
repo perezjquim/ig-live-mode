@@ -23,49 +23,52 @@ except ImportError:
 
 class IGHandler( ):
 
-    __current_user = ''
-    __cached_settings = { }
+    _cookies = None
+    _auth = None
+    _api = None
 
-    def get_user_info( user_name ):
-        user_info = ActionHandler.get_user_info( user_name )
-        return user_info
+    def __init__( self, cookies = None, auth = None ):
+        self._cookies = cookies
+        self._auth = auth
+        self._api = None
 
-    def enable_live( data ):
-        api = IGHandler._login( data )
-        ActionHandler.on_action( api, { 'mode' : 'ENABLE-LIVE', 'data' : data } )
-
-    def disable_live( data ):
-        api = IGHandler._login( data )  
-        ActionHandler.on_action( api, { 'mode' : 'DISABLE-LIVE', 'data' : data } )
-
-    def onlogin_callback( api ):
-        cached_settings = api.settings
-        IGHandler.__cached_settings = cached_settings
-
-    def _login( data ):
-
-        api = None
-        device_id = None
-
-        user = data[ 'user' ]
-        pw = data[ 'pw' ]        
+    def authenticate( self ):
 
         try:
 
-            current_user = IGHandler.__current_user
-            cached_settings = IGHandler.__cached_settings
-            if cached_settings != { } and user == current_user:
-                device_id = cached_settings[ 'device_id' ]
-                api = Client( user, pw, settings = cached_settings )
+            if self._cookies:
+
+                if 'settings' in self._cookies:
+
+                    cached_settings_str = self._cookies[ 'ig_settings' ]
+                    cached_settings = json.loads( cached_settings_str )
+                    cached_settings[ 'cookie' ] = cached_settings[ 'cookie' ].encode( )
+                    self._api = Client( None, None, settings = cached_settings )
+
+                else:
+
+                    exit(9)
+
             else:
-                api = Client( user, pw, on_login = lambda x: IGHandler.onlogin_callback( x ) )
 
-        except (ClientCookieExpiredError, ClientLoginRequiredError) as e:
-            print('ClientCookieExpiredError/ClientLoginRequiredError: {0!s}'.format(e))
+                if self._auth:
 
-            api = Client( user, pw, device_id = device_id, on_login = lambda x: IGHandler.onlogin_callback( x ) )
+                    if 'user' in self._auth and 'pw' in self._auth:
 
-        except ClientLoginError as e:
+                        user = self._auth[ 'user' ]
+                        pw = self._auth[ 'pw' ]
+
+                        self._api = Client( user, pw )
+
+                    else:
+
+                        exit(9)
+
+                else:
+
+                    exit(9)
+
+        except (ClientCookieExpiredError, ClientLoginRequiredError, ClientLoginError) as e:
             print('ClientLoginError {0!s}'.format(e))
             exit(9)
 
@@ -75,6 +78,19 @@ class IGHandler( ):
 
         except Exception as e:
             print('Unexpected Exception: {0!s}'.format(e))
-            exit(99)
+            exit(99)                
 
-        return api        
+    def enable_live( self, data ):
+        ActionHandler.on_action( self._api, { 'mode' : 'ENABLE-LIVE', 'data' : data } )
+
+    def disable_live( self, data ):
+        ActionHandler.on_action( self._api, { 'mode' : 'DISABLE-LIVE', 'data' : data } )
+
+    def get_settings( self ):
+        settings = self._api.settings
+        settings[ 'cookie' ] = settings[ 'cookie' ].decode( errors = 'replace' )
+        return settings
+
+    def get_user_info( user_name ):
+        user_info = ActionHandler.get_user_info( user_name )
+        return user_info        
