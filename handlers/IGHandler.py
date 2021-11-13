@@ -23,12 +23,12 @@ except ImportError:
 
 class IGHandler( ):
 
-    _cookies = None
+    _ig_settings = None
     _auth = None
     _api = None
 
-    def __init__( self, cookies = None, auth = None ):
-        self._cookies = cookies
+    def __init__( self, ig_settings = None, auth = None ):
+        self._ig_settings = ig_settings
         self._auth = auth
         self._api = None
 
@@ -36,18 +36,12 @@ class IGHandler( ):
 
         try:
 
-            if self._cookies:
+            if self._ig_settings:
 
-                if 'settings' in self._cookies:
+                ig_settings = self._ig_settings
+                ig_settings[ 'cookie' ] = ig_settings[ 'cookie' ].encode( errors = 'surrogateescape' )
 
-                    cached_settings_str = self._cookies[ 'ig_settings' ]
-                    cached_settings = json.loads( cached_settings_str )
-                    cached_settings[ 'cookie' ] = cached_settings[ 'cookie' ].encode( )
-                    self._api = Client( None, None, settings = cached_settings )
-
-                else:
-
-                    exit(9)
+                self._api = Client( None, None, settings = ig_settings )
 
             else:
 
@@ -88,7 +82,7 @@ class IGHandler( ):
 
     def get_settings( self ):
         settings = self._api.settings
-        settings[ 'cookie' ] = settings[ 'cookie' ].decode( errors = 'replace' )
+        settings[ 'cookie' ] = settings[ 'cookie' ].decode( errors = 'surrogateescape' )
         return settings
 
     def get_user_info( user_name ):
