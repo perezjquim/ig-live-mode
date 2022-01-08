@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response, request, jsonify
 import json
 import basicauth
 
@@ -66,7 +66,7 @@ class APIHandler( ):
 
 		ig = APIHandler._reauthenticate( data )
 		user_info = ig.get_user_full_info( )
-		return user_info		
+		return jsonify( user_info )
 
 	def _reauthenticate( data ):
 		print( 'Reauthenticating...' )
