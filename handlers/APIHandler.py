@@ -8,44 +8,8 @@ api = Blueprint( "APIHandler", __name__ )
 
 class APIHandler( ):
 
-	__user_info_cache = { }
-
 	def get_blueprint( self ):
 		return api	
-
-	@api.route( '/enable-live', methods = [ 'POST' ] )
-	def enable_live( ):
-		data = json.loads( request.data )
-
-		print( 'Authenticating...' )
-		ig_settings = data[ 'ig_settings' ]
-		ig = IGHandler( ig_settings = ig_settings )
-		ig.authenticate( )
-		print( 'Authenticating... done!' )		
-
-		print( 'Enabling live mode...' )
-		config = data[ 'config' ]
-		ig.enable_live( config )
-		print( 'Enabling live mode... done!' )		
-
-		return Response( 'OK' )
-
-	@api.route( '/disable-live', methods = [ 'POST' ] )
-	def disable_live( ):
-		data = json.loads( request.data )
-
-		print( 'Authenticating...' )
-		ig_settings = data[ 'ig_settings' ]
-		ig = IGHandler( ig_settings = ig_settings )
-		ig.authenticate( )
-		print( 'Authenticating... done!' )
-
-		print( 'Disabling live mode...' )
-		config = data[ 'config' ]
-		ig.disable_live( config )
-		print( 'Disabling live mode... done!' )		
-
-		return Response( 'OK' )	
 
 	@api.route( '/login', methods = [ 'POST' ] )
 	def login( ):
@@ -70,17 +34,45 @@ class APIHandler( ):
 
 		return Response( cached_settings_str, mimetype = 'application/json', status = 200 )		
 
-	@api.route( '/get-user-info/<string:user_name>', methods = [ 'GET' ] )
-	def get_user_info( user_name ):
-		user_info = { }
+	@api.route( '/enable-live', methods = [ 'POST' ] )
+	def enable_live( ):
+		data = json.loads( request.data )
 
-		if user_name in APIHandler.__user_info_cache:
-			print( 'Reading user info from cache...' )
-			user_info = APIHandler.__user_info_cache[ user_name ]
-			print( 'Reading user info from cache... done!' )                        
-		else:
-			print( 'Fetching user info from IG...' )                	
-			user_info = IGHandler.get_user_info( user_name )
-			APIHandler.__user_info_cache[ user_name ] = user_info
-			print( 'Fetching user info from IG... done!' )                        
-		return user_info
+		ig = APIHandler._reauthenticate( data )		
+
+		print( 'Enabling live mode...' )
+		config = data[ 'config' ]
+		ig.enable_live( config )
+		print( 'Enabling live mode... done!' )		
+
+		return Response( 'OK' )
+
+	@api.route( '/disable-live', methods = [ 'POST' ] )
+	def disable_live( ):
+		data = json.loads( request.data )
+
+		ig = APIHandler._reauthenticate( data )
+
+		print( 'Disabling live mode...' )
+		config = data[ 'config' ]
+		ig.disable_live( config )
+		print( 'Disabling live mode... done!' )		
+
+		return Response( 'OK' )	
+
+	@api.route( '/get-user-full-info', methods = [ 'POST' ] )
+	def get_user_info( ):
+		data = json.loads( request.data )
+
+		ig = APIHandler._reauthenticate( data )
+		user_info = ig.get_user_full_info( )
+		return user_info		
+
+	def _reauthenticate( data ):
+		print( 'Reauthenticating...' )
+		ig_settings = data[ 'ig_settings' ]
+		ig = IGHandler( ig_settings = ig_settings )
+		ig.authenticate( )
+		print( 'Reauthenticating... done!' )		
+
+		return ig

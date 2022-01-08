@@ -1,81 +1,16 @@
-import os
-import json
-import time
-import requests
-import re
-from flask import jsonify
-from fake_useragent import UserAgent
-import base64
-
 class ActionHandler( ):
 
-	SLEEP_TIME_SECS = 0.1
-
-	def get_user_info( user_name ):
-		ua = UserAgent( )
-
-		request_url = "https://www.anonigviewer.com/profile.php?u={}".format( user_name )
-		request_headers = {
-			'User-Agent': ua.random
-		}
-		response = requests.get( request_url, headers = request_headers )
-		response_text = response.text
-
-		user_info = { }
-
-		user_info_json_search = re.findall( 'StoreSearch\(([\s\S]*?)\);', response_text )
-		if len( user_info_json_search ) == 0:
-
-			user_info_img_search = re.findall( '<img class="user-img" src="([\s\S]*?)">', response_text )
-			if len( user_info_img_search ) > 0:
-				user_info[ 'profile_pic_url' ] = user_info_img_search[ 0 ]
-
-			user_info_full_name_search = re.findall( '<title>([\s\S]*?)\(@', response_text )
-			if len( user_info_full_name_search ) > 0:
-				user_info[ 'full_name' ] = user_info_full_name_search[ 0 ]		
-
-		else:		
-
-			user_info_str = user_info_json_search[ 0 ]
-			user_info = json.loads( user_info_str )
-
-		profile_pic_url = user_info[ 'profile_pic_url' ]
-
-		if profile_pic_url == '/img/no-avatar.png':
-
-			pass
-
-		else:
-
-			profile_pic_response = requests.get( profile_pic_url, verify = False )
-
-			profile_pic_content_type = profile_pic_response.headers[ 'Content-Type' ]
-			profile_pic_content_b64 = base64.b64encode( profile_pic_response.content ).decode("utf-8")
-			profile_pic_content = "data:{};base64,{}".format(
-				profile_pic_response.headers[ 'Content-Type' ],
-				profile_pic_content_b64
-			) 
-
-			user_info[ 'profile_pic_content' ] = profile_pic_content	
-
-		return jsonify( user_info )
-
-	def on_action( api, args ):
+	def on_action( ig, args ):
 		mode = args[ 'mode' ]
 
-		uuid = api.settings[ 'uuid' ]
 		data = args[ 'data' ]
 
-		print( 'Fetching user info..' )	
-		my_user = api.user_info( api.authenticated_user_id )
-		my_user_info = my_user[ 'user' ]
-		print( 'Fetching user info.. done!' )		
+		api = ig.get_api( )
 
 		print( 'Fetching followers..' )
-		followers = ActionHandler._get_followers( api, uuid, my_user_info )
+		followers = ig.get_followers( )
 		blocked_profiles = api.blocked_reels( )
-		blocked_profiles = [ p[ 'username' ] for p in blocked_profiles[ 'users' ] ]	
-		ActionHandler._sleep( )				
+		blocked_profiles = [ p[ 'username' ] for p in blocked_profiles[ 'users' ] ]			
 		print( 'Fetching followers.. done!' )
 
 		if mode == 'ENABLE-LIVE':
@@ -111,25 +46,3 @@ class ActionHandler( ):
 		]		
 		print( profiles_to_unblock )	
 		api.set_reel_block_status( profiles_to_unblock, 'unblock' )
-
-	def _get_followers( api, uuid, my_user_info ):
-		my_user_id = my_user_info[ 'pk' ]
-		my_user_follower_count = my_user_info[ 'follower_count' ]
-
-		followers = [ ]	
-		result = api.user_followers( my_user_id, rank_token = uuid )
-		followers.extend( result[ 'users' ] )
-		ActionHandler._sleep( )
-
-		next_max_id = result[ 'next_max_id' ]
-		while next_max_id and len( followers ) < my_user_follower_count:
-			result = api.user_followers( my_user_id, rank_token = uuid, max_id = next_max_id )
-			followers.extend( result[ 'users' ] )
-			ActionHandler._sleep( )
-
-		followers = list( followers[ :my_user_follower_count ] )
-
-		return followers
-
-	def _sleep( ):
-		time.sleep( ActionHandler.SLEEP_TIME_SECS )
