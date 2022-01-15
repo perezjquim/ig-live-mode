@@ -1,9 +1,7 @@
 import os
-import inspect
-import sys
 from peewee import *
-from playhouse.db_url import connect
 import importlib
+from urlparse import urlparse
 
 from base.SingletonMetaClass import SingletonMetaClass
 
@@ -19,7 +17,12 @@ class DBHandler( metaclass = SingletonMetaClass ):
 
 	def __init__( self ):		
 		database_uri = os.environ.get( 'DATABASE_URI' )
-		self._connection = connect( database_uri )
+		database_uri_parsed = urlparse( database_uri )
+		self._connection = PostgresqlDatabase( 
+			database = database_uri_parsed.database
+			user = database_uri_parsed.username
+			password = database_uri_parsed.password
+		)
 
 	def get_connection( self ):
 		return self._connection
