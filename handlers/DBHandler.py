@@ -1,7 +1,7 @@
 import os
 from peewee import *
 import importlib
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 from base.SingletonMetaClass import SingletonMetaClass
 
