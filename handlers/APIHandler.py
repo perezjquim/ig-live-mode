@@ -6,8 +6,6 @@ from .IGHandler import IGHandler
 
 api = Blueprint( "APIHandler", __name__ )
 
-from models.List import List
-
 class APIHandler( ):
 
 	def get_blueprint( self ):
@@ -38,45 +36,44 @@ class APIHandler( ):
 
 	@api.route( '/enable-live', methods = [ 'POST' ] )
 	def enable_live( ):
-		data = json.loads( request.data )
-
-		ig = APIHandler._reauthenticate( data )		
+		ig = APIHandler._reauthenticate( request )
 
 		print( 'Enabling live mode...' )
-		config = data[ 'config' ]
-		ig.enable_live( config )
+		ig.enable_live( )
 		print( 'Enabling live mode... done!' )		
 
 		return Response( 'OK' )
 
 	@api.route( '/disable-live', methods = [ 'POST' ] )
 	def disable_live( ):
-		data = json.loads( request.data )
-
-		ig = APIHandler._reauthenticate( data )
+		ig = APIHandler._reauthenticate( request )
 
 		print( 'Disabling live mode...' )
-		config = data[ 'config' ]
-		ig.disable_live( config )
+		ig.disable_live( )
 		print( 'Disabling live mode... done!' )		
 
 		return Response( 'OK' )	
 
-	@api.route( '/get-user-full-info', methods = [ 'POST' ] )
+	@api.route( '/get-user-info', methods = [ 'GET' ] )
 	def get_user_info( ):
-		data = json.loads( request.data )
-
-		ig = APIHandler._reauthenticate( data )
+		ig = APIHandler._reauthenticate( request )
 		user_info = ig.get_user_full_info( )
 		return jsonify( user_info )
 
-	@api.route( '/lists', methods = [ 'GET' ] )
-	def get_lists( ):
-		return jsonify( List.select( ) )
+	@api.route( '/get-followers-config', methods = [ 'GET' ] )
+	def get_followers( ):
+		ig = APIHandler._reauthenticate( request )
+		followers_config = ig.get_followers_config( )
+		return jsonify( followers_config )		
 
-	def _reauthenticate( data ):
+	@api.route( '/get-modes', methods = [ 'GET' ] )
+	def get_modes( ):
+		with open( '../config/ig_modes.json', 'r' ) as file:
+			return jsonify( json.loads( file.read( ) ) )
+
+	def _reauthenticate( request ):
 		print( 'Reauthenticating...' )
-		ig_settings = data[ 'ig_settings' ]
+		ig_settings = request.headers.get( 'ig_settings' )
 		ig = IGHandler( ig_settings = ig_settings )
 		ig.authenticate( )
 		print( 'Reauthenticating... done!' )		

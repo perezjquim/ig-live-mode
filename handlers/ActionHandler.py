@@ -1,9 +1,12 @@
+from models.UserListEntry import UserListEntry
+
 class ActionHandler( ):
 
 	def on_action( ig, args ):
 		mode = args[ 'mode' ]
 
-		data = args[ 'data' ]
+		user_id = ig.get_user_id( )
+		user_list_entries = UserListEntry.select( )
 
 		api = ig.get_api( )
 
@@ -14,18 +17,18 @@ class ActionHandler( ):
 		print( 'Fetching followers.. done!' )
 
 		if mode == 'ENABLE-LIVE':
-			print( 'Blocking..' )
-			live_whitelist = [ p[ 'user_name' ] for p in data[ 'live_whitelist' ] ]
+			print( 'Enabling live mode..' )
+			live_whitelist = [ p[ 'user_name' ] for p in user_list_entries.where( UserListEntry.ig_mode == 'all' ) ]
 			if( len( live_whitelist ) ) > 0:
 				ActionHandler.enable_live( api, followers, blocked_profiles, live_whitelist )
-			print( 'Blocking.. done!' )
+			print( 'Enabling live mode.. done!' )
 
 		elif mode == 'DISABLE-LIVE':
-			print( 'Unblocking..' )	
-			general_blacklist = [ p[ 'user_name' ] for p in data[ 'general_blacklist' ] ]
+			print( 'Disabling live mode..' )	
+			general_blacklist = [ p[ 'user_name' ] for p in user_list_entries.where( UserListEntry.ig_mode == 'none' ) ]
 			if len( general_blacklist ) > 0:
 				ActionHandler.disable_live( api, followers, blocked_profiles, general_blacklist )
-			print( 'Unblocking.. done!' )			
+			print( 'Disabling live mode.. done!' )			
 
 		else:
 			print( 'idk' )

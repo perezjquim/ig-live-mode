@@ -17,16 +17,16 @@ except ImportError:
     
 from .ActionHandler import ActionHandler
 
+from models.UserListEntry import UserListEntry
+
 class IGHandler( ):
 
     _settings = None
     _auth = None
     _api = None
 
-    __web_client = None
     __user_info_cache = { }
     __followers_cache = { }
-    __user_full_info_cache = { }
     __profile_pic_cache = { }
 
     SLEEP_TIME_SECS = 0.1    
@@ -78,11 +78,11 @@ class IGHandler( ):
             print('Unexpected Exception: {0!s}'.format(e))
             exit(99)                
 
-    def enable_live( self, data ):
-        ActionHandler.on_action( self, { 'mode' : 'ENABLE-LIVE', 'data' : data } )
+    def enable_live( self ):
+        ActionHandler.on_action( self, { 'mode' : 'ENABLE-LIVE' } )
 
-    def disable_live( self, data ):
-        ActionHandler.on_action( self, { 'mode' : 'DISABLE-LIVE', 'data' : data } )
+    def disable_live( self ):
+        ActionHandler.on_action( self, { 'mode' : 'DISABLE-LIVE' } )
 
     def get_settings( self ):
         settings = self._api.settings
@@ -92,37 +92,20 @@ class IGHandler( ):
     def get_api( self ):
         return self._api
 
-    def get_user_full_info( self ):
-        print( '> Fetching user full info...' )
-
-        user_id = self._api.authenticated_user_id
-
-        if user_id in IGHandler.__user_full_info_cache:
-            print( '< Fetching user full info... done! (found in cache!)' )            
-            return IGHandler.__user_full_info_cache[ user_id ]        
-
-        user_full_info = self.get_user_info( )
-        user_full_info[ 'followers' ] = self.get_followers( )
-        user_full_info[ 'profile_pic_content' ] = self._get_profile_pic_content( user_full_info )
-        for f in user_full_info[ 'followers' ]:
-            f[ 'profile_pic_content' ] = self._get_profile_pic_content( f )
-
-        IGHandler.__user_full_info_cache[ user_id ] = user_full_info                  
-
-        print( '< Fetching user full info... done!' )
-
-        return user_full_info
+    def get_user_id( self ):
+        return self._api.authenticated_user_id
 
     def get_user_info( self ):
         print( '> Fetching user info...' )
 
-        user_id = self._api.authenticated_user_id
+        user_id = self.get_user_id( )
 
         if user_id in IGHandler.__user_info_cache:
             print( '< Fetching user info... done! (found in cache!)' )            
             return IGHandler.__user_info_cache[ user_id ]
 
         user_info = self._api.user_info( user_id )[ 'user' ]
+        user_info[ 'profile_pic_content' ] = self._get_profile_pic_content( user_info )
         IGHandler.__user_info_cache[ user_id ] = user_info             
 
         print( '< Fetching user info... done!' )              
@@ -132,7 +115,7 @@ class IGHandler( ):
     def get_followers( self ):
         print( '> Fetching followers...' )
 
-        user_id = self._api.authenticated_user_id
+        user_id = self.get_user_id( )
 
         if user_id in IGHandler.__followers_cache:
             print( '< Fetching followers... done! (found in cache!)' )
@@ -142,7 +125,7 @@ class IGHandler( ):
 
         uuid = self._api.settings[ 'uuid' ]
 
-        user_id = self._api.authenticated_user_id
+        user_id = self.get_user_id( )
         follower_count = user_info[ 'follower_count' ]
 
         followers = [ ] 
@@ -158,11 +141,29 @@ class IGHandler( ):
 
         followers = list( followers[ :follower_count ] )
 
+        for f in followers:
+            f[ 'profile_pic_content' ] = self._get_profile_pic_content( f )        
+
         IGHandler.__followers_cache[ user_id ] = followers
 
         print( '< Fetching followers.. done!' )        
 
         return followers
+
+    def get_followers_config( self ):
+        print( '> Fetching followers config..' )
+        user_id = self.get_user_id( )
+
+        followers = self.get_followers( )
+        for f in followers:
+            f[ 'ig_mode' ] = ( UserListEntry.get( 
+                ( UserListEntry.owner_pk == user_id ) 
+                & 
+                ( UserListEntry.user_pk == f[ 'pk' ] ) 
+            ).ig_mode or 'stories_only' )
+        print( '< Fetching followers config.. done!' )
+
+        return followers_config
 
     def _get_profile_pic_content( self, user_info ):
         profile_pic_content = ''

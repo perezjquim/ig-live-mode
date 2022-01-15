@@ -22,6 +22,8 @@ class DBHandler( metaclass = SingletonMetaClass ):
 			database = database_uri_parsed.database
 			user = database_uri_parsed.username
 			password = database_uri_parsed.password
+			host = database_uri_parsed.host
+			port = database_uri_parsed.port
 		)
 
 	def get_connection( self ):

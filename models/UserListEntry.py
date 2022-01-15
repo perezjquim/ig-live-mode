@@ -5,6 +5,6 @@ from .UserList import UserList
 
 class UserListEntry( BaseModel ):
     id = AutoField( primary_key = True )
-    user_list_id = ForeignKeyField( UserList )
+    owner_pk = IntegerField( )
     entry_pk = IntegerField( )
-    is_active = BooleanField( )
+    ig_mode = TextField( )
