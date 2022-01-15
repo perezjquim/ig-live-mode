@@ -10,8 +10,6 @@ class DBHandler( metaclass = SingletonMetaClass ):
 	_connection = None
 
 	__MODEL_PATHS = [ 
-		"models.List",
-		"models.UserList",
 		"models.UserListEntry"
 	]	
 
