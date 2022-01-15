@@ -154,13 +154,15 @@ class IGHandler( ):
 
         for f in followers:
 
-            f[ 'ig_mode' ] = UserListEntry.get_or_none( 
+            user_list_entry = UserListEntry.get_or_none( 
                 ( UserListEntry.owner_pk == user_id ) 
                 & 
                 ( UserListEntry.entry_pk == f[ 'pk' ] ) 
-            ).ig_mode
+            )
 
-            if f[ 'ig_mode' ] == None:
+            if user_list_entry:
+                f[ 'ig_mode' ] = user_list_entry.ig_mode
+            else:
                 f[ 'ig_mode' ] = 'stories_only'
 
         print( '< Fetching followers config.. done!' )
