@@ -129,13 +129,11 @@ class IGHandler( ):
         followers = [ ] 
         result = self._api.user_followers( user_id, rank_token = uuid )
         followers.extend( result[ 'users' ] )
-        self._sleep( )
 
         next_max_id = result[ 'next_max_id' ]
         while next_max_id and len( followers ) < follower_count:
             result = self._api.user_followers( user_id, rank_token = uuid, max_id = next_max_id )
             followers.extend( result[ 'users' ] )
-            self._sleep( )
 
         followers = list( followers[ :follower_count ] )
 
