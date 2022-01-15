@@ -14,16 +14,15 @@ class DBHandler( metaclass = SingletonMetaClass ):
 	]	
 
 	def __init__( self ):		
-		database_uri = os.environ.get( 'DATABASE_URI' )
-		database_uri_parsed = urlparse( database_uri )
+		database_url = os.environ.get( 'DATABASE_URL' )
+		database_url_parsed = urlparse( database_url )
 		self._connection = PostgresqlDatabase( 
-			database_uri_parsed.path[ 1: ],
-			user = database_uri_parsed.username,
-			password = database_uri_parsed.password,
-			host = database_uri_parsed.hostname,
-			port = database_uri_parsed.port
+			database_url_parsed.path[ 1: ],
+			user = database_url_parsed.username,
+			password = database_url_parsed.password,
+			host = database_url_parsed.hostname,
+			port = database_url_parsed.port
 		)
-		self._connection.connect( )
 
 	def get_connection( self ):
 		return self._connection
