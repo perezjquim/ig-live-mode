@@ -35,4 +35,4 @@ class DBHandler( metaclass = SingletonMetaClass ):
 			model_class = getattr( importlib.import_module( path ), class_name )	
 			model_classes.append( model_class )
 
-		self._connection.create_tables( model_classes )
+		self._connection.create_tables( model_classes, safe = True )
