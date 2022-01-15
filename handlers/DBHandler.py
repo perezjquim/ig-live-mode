@@ -23,6 +23,7 @@ class DBHandler( metaclass = SingletonMetaClass ):
 			host = database_uri_parsed.hostname,
 			port = database_uri_parsed.port
 		)
+		self._connection.connect( )
 
 	def get_connection( self ):
 		return self._connection
