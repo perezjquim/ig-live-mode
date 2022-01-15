@@ -29,8 +29,6 @@ class IGHandler( ):
     __followers_cache = { }
     __profile_pic_cache = { }
 
-    SLEEP_TIME_SECS = 0.1    
-
     def __init__( self, ig_settings = None, auth = None ):
         self._settings = ig_settings
         self._auth = auth
@@ -157,16 +155,14 @@ class IGHandler( ):
         followers = self.get_followers( )
 
         for f in followers:
-            
-            try:
 
-                f[ 'ig_mode' ] = UserListEntry.get( 
-                    ( UserListEntry.owner_pk == user_id ) 
-                    & 
-                    ( UserListEntry.entry_pk == f[ 'pk' ] ) 
-                ).ig_mode
+            f[ 'ig_mode' ] = UserListEntry.get_or_none( 
+                ( UserListEntry.owner_pk == user_id ) 
+                & 
+                ( UserListEntry.entry_pk == f[ 'pk' ] ) 
+            ).ig_mode
 
-            except models.UserListEntry.UserListEntryDoesNotExist:
+            if f[ 'ig_mode' ] == None:
                 f[ 'ig_mode' ] = 'stories_only'
 
         print( '< Fetching followers config.. done!' )
@@ -195,6 +191,3 @@ class IGHandler( ):
             IGHandler.__profile_pic_cache[ profile_pic_url ] = profile_pic_content
 
         return profile_pic_content
-
-    def _sleep( self ):
-        time.sleep( IGHandler.SLEEP_TIME_SECS )        
