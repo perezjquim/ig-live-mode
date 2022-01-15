@@ -155,12 +155,20 @@ class IGHandler( ):
         user_id = self.get_user_id( )
 
         followers = self.get_followers( )
+
         for f in followers:
-            f[ 'ig_mode' ] = ( UserListEntry.get( 
-                ( UserListEntry.owner_pk == user_id ) 
-                & 
-                ( UserListEntry.entry_pk == f[ 'pk' ] ) 
-            ).ig_mode or 'stories_only' )
+            
+            try:
+
+                f[ 'ig_mode' ] = UserListEntry.get( 
+                    ( UserListEntry.owner_pk == user_id ) 
+                    & 
+                    ( UserListEntry.entry_pk == f[ 'pk' ] ) 
+                ).ig_mode
+
+            except models.UserListEntry.UserListEntryDoesNotExist:
+                f[ 'ig_mode' ] = 'stories_only'
+
         print( '< Fetching followers config.. done!' )
 
         return followers_config
