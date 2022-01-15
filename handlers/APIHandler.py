@@ -68,12 +68,12 @@ class APIHandler( ):
 
 	@api.route( '/get-modes', methods = [ 'GET' ] )
 	def get_modes( ):
-		with open( '../config/ig_modes.json', 'r' ) as file:
+		with open( 'config/ig_modes.json', 'r' ) as file:
 			return jsonify( json.loads( file.read( ) ) )
 
 	def _reauthenticate( request ):
 		print( 'Reauthenticating...' )
-		ig_settings = request.headers.get( 'ig_settings' )
+		ig_settings = json.loads( request.headers.get( 'ig_settings' ) )
 		ig = IGHandler( ig_settings = ig_settings )
 		ig.authenticate( )
 		print( 'Reauthenticating... done!' )		
