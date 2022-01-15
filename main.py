@@ -4,7 +4,7 @@ import psycopg2 #dummy
 from flask import Flask
 from flask_cors import CORS
 
-from .DBHandler import DBHandler
+from handlers.DBHandler import DBHandler
 db = DBHandler( )
 db.prepare_tables( )
 
