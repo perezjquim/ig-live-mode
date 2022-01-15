@@ -22,7 +22,7 @@ class DBHandler( metaclass = SingletonMetaClass ):
 			database = database_uri_parsed.path[1:],
 			user = database_uri_parsed.username,
 			password = database_uri_parsed.password,
-			host = database_uri_parsed.host,
+			host = database_uri_parsed.hostname,
 			port = database_uri_parsed.port
 		)
 
