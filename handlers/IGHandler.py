@@ -203,8 +203,9 @@ class IGHandler( ):
                     ig_mode = f[ 'ig_mode' ]
                 )
                 .on_conflict(
-                    preserve= ( UserListEntry.owner_pk, UserListEntry.entry_pk ),
-                    update= { UserListEntry.ig_mode: f[ 'ig_mode' ] } 
+                    conflict_target = [ UserListEntry.id ],
+                    preserve = [ UserListEntry.owner_pk, UserListEntry.entry_pk ],
+                    update = { UserListEntry.ig_mode: f[ 'ig_mode' ] } 
                 )
                 .execute()
             )
