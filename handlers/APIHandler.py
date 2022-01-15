@@ -6,6 +6,8 @@ from .IGHandler import IGHandler
 
 api = Blueprint( "APIHandler", __name__ )
 
+from models.List import List
+
 class APIHandler( ):
 
 	def get_blueprint( self ):
@@ -67,6 +69,10 @@ class APIHandler( ):
 		ig = APIHandler._reauthenticate( data )
 		user_info = ig.get_user_full_info( )
 		return jsonify( user_info )
+
+	@api.route( '/lists', methods = [ 'GET' ] )
+	def get_lists( ):
+		return jsonify( List.select( ) )
 
 	def _reauthenticate( data ):
 		print( 'Reauthenticating...' )

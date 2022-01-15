@@ -1,5 +1,3 @@
-from .ActionHandler import ActionHandler
-
 import time
 import requests
 import base64
@@ -16,6 +14,8 @@ except ImportError:
         Client, ClientError, ClientLoginError,
         ClientCookieExpiredError, ClientLoginRequiredError,
         __version__ as client_version)
+    
+from .ActionHandler import ActionHandler
 
 class IGHandler( ):
 
@@ -27,6 +27,7 @@ class IGHandler( ):
     __user_info_cache = { }
     __followers_cache = { }
     __user_full_info_cache = { }
+    __profile_pic_cache = { }
 
     SLEEP_TIME_SECS = 0.1    
 
@@ -157,6 +158,8 @@ class IGHandler( ):
 
         followers = list( followers[ :follower_count ] )
 
+        IGHandler.__followers_cache[ user_id ] = followers
+
         print( '< Fetching followers.. done!' )        
 
         return followers
@@ -164,7 +167,10 @@ class IGHandler( ):
     def _get_profile_pic_content( self, user_info ):
         profile_pic_content = ''
 
-        profile_pic_url = user_info[ 'profile_pic_url' ]
+        profile_pic_url = user_info[ 'profile_pic_url' ]        
+
+        if profile_pic_url in IGHandler.__profile_pic_cache:         
+            return IGHandler.__profile_pic_cache[ profile_pic_url ]        
 
         if profile_pic_url:
 
@@ -176,6 +182,8 @@ class IGHandler( ):
                 profile_pic_response.headers[ 'Content-Type' ],
                 profile_pic_content_b64
             )
+
+            IGHandler.__profile_pic_cache[ profile_pic_url ] = profile_pic_content
 
         return profile_pic_content
 
