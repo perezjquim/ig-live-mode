@@ -152,14 +152,18 @@ class IGHandler( ):
 
         return blocked_profiles
 
-    def get_followers_config( self ):
-        print( '> Fetching followers config..' )
+    def get_config( self ):
+        print( '> Fetching config..' )
+
+        config = { }
+
         user_id = self.get_user_id( )
 
         followers = self.get_followers( )
-        followers_config = followers
 
-        if len( followers_config ) > 0:
+        if len( followers ) > 0:
+
+            followers_config = followers
 
             blocked_profiles = self.get_blocked_profiles( )
 
@@ -179,9 +183,14 @@ class IGHandler( ):
                     else:
                         f[ 'ig_mode' ] = 'stories_only'
 
-        print( '< Fetching followers config.. done!' )
+            config[ 'followers_config' ] = followers_config
 
-        return followers_config
+        print( '< Fetching config.. done!' )
+
+        return config
+
+    def update_config( self, config ):
+        return
 
     def _get_profile_pic_content( self, user_info ):
         profile_pic_content = ''

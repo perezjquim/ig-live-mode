@@ -60,11 +60,20 @@ class APIHandler( ):
 		user_info = ig.get_user_info( )
 		return jsonify( user_info )
 
-	@api.route( '/get-followers-config', methods = [ 'GET' ] )
-	def get_followers_config( ):
+	@api.route( '/get-config', methods = [ 'GET' ] )
+	def get_config( ):
 		ig = APIHandler._reauthenticate( request )
-		followers_config = ig.get_followers_config( )
-		return jsonify( followers_config )		
+		config = ig.get_config( )
+		return jsonify( config )		
+
+	@api.route( '/update-config', methods = [ 'POST' ] )
+	def update_config( ):
+		config = json.loads( request.data )
+
+		ig = APIHandler._reauthenticate( request )		
+		ig.update_config( config )
+
+		return jsonify( {} )
 
 	@api.route( '/get-modes', methods = [ 'GET' ] )
 	def get_modes( ):
