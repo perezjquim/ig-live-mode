@@ -57,11 +57,11 @@ class APIHandler( ):
 	@api.route( '/get-user-info', methods = [ 'GET' ] )
 	def get_user_info( ):
 		ig = APIHandler._reauthenticate( request )
-		user_info = ig.get_user_full_info( )
+		user_info = ig.get_user_info( )
 		return jsonify( user_info )
 
 	@api.route( '/get-followers-config', methods = [ 'GET' ] )
-	def get_followers( ):
+	def get_followers_config( ):
 		ig = APIHandler._reauthenticate( request )
 		followers_config = ig.get_followers_config( )
 		return jsonify( followers_config )		
