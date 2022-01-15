@@ -146,6 +146,12 @@ class IGHandler( ):
 
         return followers
 
+    def get_blocked_profiles( self ):
+        blocked_profiles = self._api.blocked_reels( )
+        blocked_profiles = [ p[ 'pk' ] for p in blocked_profiles[ 'users' ] ]         
+
+        return blocked_profiles
+
     def get_followers_config( self ):
         print( '> Fetching followers config..' )
         user_id = self.get_user_id( )
@@ -153,18 +159,25 @@ class IGHandler( ):
         followers = self.get_followers( )
         followers_config = followers
 
-        for f in followers_config:
+        if len( followers_config ) > 0:
 
-            user_list_entry = UserListEntry.get_or_none( 
-                ( UserListEntry.owner_pk == user_id ) 
-                & 
-                ( UserListEntry.entry_pk == f[ 'pk' ] ) 
-            )
+            blocked_profiles = self.get_blocked_profiles( )
 
-            if user_list_entry:
-                f[ 'ig_mode' ] = user_list_entry.ig_mode
-            else:
-                f[ 'ig_mode' ] = 'stories_only'
+            for f in followers_config:
+
+                user_list_entry = UserListEntry.get_or_none( 
+                    ( UserListEntry.owner_pk == user_id ) 
+                    & 
+                    ( UserListEntry.entry_pk == f[ 'pk' ] ) 
+                )
+
+                if user_list_entry:
+                    f[ 'ig_mode' ] = user_list_entry.ig_mode
+                else:
+                    if f[ 'pk' ] in blocked_profiles:
+                        f[ 'ig_mode' ] = 'none'
+                    else:
+                        f[ 'ig_mode' ] = 'stories_only'
 
         print( '< Fetching followers config.. done!' )
 
