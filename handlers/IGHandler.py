@@ -151,8 +151,9 @@ class IGHandler( ):
         user_id = self.get_user_id( )
 
         followers = self.get_followers( )
+        followers_config = followers
 
-        for f in followers:
+        for f in followers_config:
 
             user_list_entry = UserListEntry.get_or_none( 
                 ( UserListEntry.owner_pk == user_id ) 
