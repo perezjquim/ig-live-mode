@@ -19,10 +19,10 @@ class DBHandler( metaclass = SingletonMetaClass ):
 		database_uri = os.environ.get( 'DATABASE_URI' )
 		database_uri_parsed = urlparse( database_uri )
 		self._connection = PostgresqlDatabase( 
-			database = database_uri_parsed.database
-			user = database_uri_parsed.username
-			password = database_uri_parsed.password
-			host = database_uri_parsed.host
+			database = database_uri_parsed.database,
+			user = database_uri_parsed.username,
+			password = database_uri_parsed.password,
+			host = database_uri_parsed.host,
 			port = database_uri_parsed.port
 		)
 
