@@ -190,7 +190,27 @@ class IGHandler( ):
         return config
 
     def update_config( self, config ):
-        return
+        print( '> Updating config..' )
+
+        user_id = self.get_user_id( )
+
+        for f in config[ 'followers_config' ]:
+
+            result = (UserListEntry
+                .insert(
+                    owner_pk = user_id, 
+                    entry_pk = f[ 'pk' ],
+                    ig_mode = f[ 'ig_mode' ]
+                .on_conflict(
+                    preserve= ( UserListEntry.owner_pk, UserListEntry.entry_pk ),
+                    update= { UserListEntry.ig_mode: f[ 'ig_mode' ] } 
+                )
+                .execute())
+            )
+
+        print( '< Updating config.. done!' )
+
+        return config
 
     def _get_profile_pic_content( self, user_info ):
         profile_pic_content = ''

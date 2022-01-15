@@ -3,7 +3,6 @@ from models.UserListEntry import UserListEntry
 class ActionHandler( ):
 
 	def on_action( ig, args ):
-		return
 		mode = args[ 'mode' ]
 
 		user_id = ig.get_user_id( )
