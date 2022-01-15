@@ -201,11 +201,12 @@ class IGHandler( ):
                     owner_pk = user_id, 
                     entry_pk = f[ 'pk' ],
                     ig_mode = f[ 'ig_mode' ]
+                )
                 .on_conflict(
                     preserve= ( UserListEntry.owner_pk, UserListEntry.entry_pk ),
                     update= { UserListEntry.ig_mode: f[ 'ig_mode' ] } 
                 )
-                .execute())
+                .execute()
             )
 
         print( '< Updating config.. done!' )
