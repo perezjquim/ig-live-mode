@@ -3,9 +3,9 @@ from peewee import *
 import importlib
 from urllib.parse import urlparse
 
-from base.SingletonMetaClass import SingletonMetaClass
+from base.Singleton import Singleton
 
-class DBHandler( metaclass = SingletonMetaClass ):
+class DBHandler( Singleton ):
 
 	_connection = None
 
