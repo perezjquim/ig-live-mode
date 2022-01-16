@@ -5,8 +5,7 @@ from urllib.parse import urlparse
 
 from base.Singleton import Singleton
 
-@Singleton
-class DBHandler( ):
+class DBHandler( Singleton ):
 
 	_connection = None
 

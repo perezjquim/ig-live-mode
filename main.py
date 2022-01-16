@@ -5,7 +5,7 @@ from flask import Flask
 from flask_cors import CORS
 
 from handlers.DBHandler import DBHandler
-db = DBHandler.get_instance( )
+db = DBHandler( )
 db.prepare_tables( )
 
 from handlers.APIHandler import APIHandler
