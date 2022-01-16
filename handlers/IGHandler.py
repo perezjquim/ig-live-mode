@@ -164,6 +164,7 @@ class IGHandler( ):
         if len( followers ) > 0:
 
             followers_config = followers
+            followers_config.sort( key = lambda f : f[ 'full_name' ] )            
 
             blocked_profiles = self.get_blocked_profiles( )
 
