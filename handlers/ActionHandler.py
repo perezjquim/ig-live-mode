@@ -24,8 +24,7 @@ class ActionHandler( ):
 				.dicts( )
 				.iterator( )
 			]
-			if( len( live_whitelist ) ) > 0:
-				ActionHandler.enable_live( api, followers, blocked_profiles, live_whitelist )
+			ActionHandler.enable_live( api, followers, blocked_profiles, live_whitelist )
 			print( 'Enabling live mode.. done!' )
 
 		elif mode == 'DISABLE-LIVE':
@@ -37,8 +36,7 @@ class ActionHandler( ):
 				.dicts( )
 				.iterator( )				
 			]
-			if len( general_blacklist ) > 0:
-				ActionHandler.disable_live( api, followers, blocked_profiles, general_blacklist )
+			ActionHandler.disable_live( api, followers, blocked_profiles, general_blacklist )
 			print( 'Disabling live mode.. done!' )			
 
 		else:
