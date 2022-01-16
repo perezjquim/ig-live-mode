@@ -196,19 +196,9 @@ class IGHandler( ):
 
         for f in config[ 'followers_config' ]:
 
-            result = (UserListEntry
-                .insert(
-                    owner_pk = user_id, 
-                    entry_pk = f[ 'pk' ],
-                    ig_mode = f[ 'ig_mode' ]
-                )
-                .on_conflict(
-                    conflict_target = [ UserListEntry.id ],
-                    preserve = [ UserListEntry.owner_pk, UserListEntry.entry_pk ],
-                    update = { UserListEntry.ig_mode: f[ 'ig_mode' ] } 
-                )
-                .execute()
-            )
+            user_list_entry = UserListEntry.get_or_create( owner_pk = user_id, entry_pk = f[ 'pk' ] )
+            user_list_entry.ig_mode = f[ 'ig_mode' ]
+            user_list_entry.save( )
 
         print( '< Updating config.. done!' )
 
