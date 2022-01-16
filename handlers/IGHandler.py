@@ -196,7 +196,7 @@ class IGHandler( ):
 
         for f in config[ 'followers_config' ]:
 
-            user_list_entry = UserListEntry.get_or_create( owner_pk = user_id, entry_pk = f[ 'pk' ] )
+            user_list_entry, is_new_entry = UserListEntry.get_or_create( owner_pk = user_id, entry_pk = f[ 'pk' ] )
             user_list_entry.ig_mode = f[ 'ig_mode' ]
             user_list_entry.save( )
 
