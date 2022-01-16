@@ -7,6 +7,5 @@ class Singleton( object ):
 	def __new__( cls ):
 		with cls._lock:
 			if cls._instance is None:
-				print( '-- Creating the object --' )
 				cls._instance = super( Singleton, cls ).__new__( cls )
 			return cls._instance

@@ -21,7 +21,6 @@ class ActionHandler( ):
 				p[ 'pk' ] for p
 				in user_list_entries
 				.where( UserListEntry.ig_mode == 'all' )
-				.tuples( )
 				.iterator( )
 			]
 			if( len( live_whitelist ) ) > 0:
@@ -34,7 +33,6 @@ class ActionHandler( ):
 				p[ 'pk' ] for p 
 				in user_list_entries
 				.where( UserListEntry.ig_mode == 'none' )
-				.tuples( )
 				.iterator( )
 			]
 			if len( general_blacklist ) > 0:
