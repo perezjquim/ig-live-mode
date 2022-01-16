@@ -1,11 +1,6 @@
-___instances = {}
-
-class Singleton( object ):
-
-   def __new__( cls, *args, **kw ):
-      if not cls in ___instances:
-          instance = super( ).__new__( cls )
-          ___instances[ cls ] = instance
-          print( '-- Creating new instance for Singleton! --' )
-
-      return ___instances[ cls ]
+class Singleton(object):
+  _instances = {}
+  def __new__(class_, *args, **kwargs):
+    if class_ not in class_._instances:
+        class_._instances[class_] = super(Singleton, class_).__new__(class_, *args, **kwargs)
+    return class_._instances[class_]
