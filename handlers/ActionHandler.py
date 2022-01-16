@@ -6,7 +6,7 @@ class ActionHandler( ):
 		mode = args[ 'mode' ]
 
 		user_id = ig.get_user_id( )
-		user_list_entries = UserListEntry.select( )
+		user_list_entries = UserListEntry.select( ).where( UserListEntry.owner_pk == user_id )
 
 		api = ig.get_api( )
 
@@ -17,14 +17,12 @@ class ActionHandler( ):
 
 		if mode == 'ENABLE-LIVE':
 			print( 'Enabling live mode..' )
-			print( user_list_entries
-				.where( UserListEntry.ig_mode == 'all' )
-				.dicts( ) )
 			live_whitelist = [ 
-				p[ 'pk' ] for p
+				p[ 'entry_pk' ] for p
 				in user_list_entries
 				.where( UserListEntry.ig_mode == 'all' )
 				.dicts( )
+				.iterator( )
 			]
 			if( len( live_whitelist ) ) > 0:
 				ActionHandler.enable_live( api, followers, blocked_profiles, live_whitelist )
@@ -32,14 +30,12 @@ class ActionHandler( ):
 
 		elif mode == 'DISABLE-LIVE':
 			print( 'Disabling live mode..' )	
-			print( user_list_entries
-				.where( UserListEntry.ig_mode == 'none' )
-				.dicts( ) )
 			general_blacklist = [ 
-				p[ 'pk' ] for p 
+				p[ 'entry_pk' ] for p 
 				in user_list_entries
 				.where( UserListEntry.ig_mode == 'none' )
 				.dicts( )
+				.iterator( )				
 			]
 			if len( general_blacklist ) > 0:
 				ActionHandler.disable_live( api, followers, blocked_profiles, general_blacklist )
