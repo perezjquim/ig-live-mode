@@ -17,6 +17,9 @@ class ActionHandler( ):
 
 		if mode == 'ENABLE-LIVE':
 			print( 'Enabling live mode..' )
+			print( user_list_entries
+				.where( UserListEntry.ig_mode == 'all' )
+				.dicts( ) )
 			live_whitelist = [ 
 				p[ 'pk' ] for p
 				in user_list_entries
@@ -29,6 +32,9 @@ class ActionHandler( ):
 
 		elif mode == 'DISABLE-LIVE':
 			print( 'Disabling live mode..' )	
+			print( user_list_entries
+				.where( UserListEntry.ig_mode == 'none' )
+				.dicts( ) )
 			general_blacklist = [ 
 				p[ 'pk' ] for p 
 				in user_list_entries
