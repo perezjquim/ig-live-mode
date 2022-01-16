@@ -1,6 +1,17 @@
-class Singleton(object):
-  _instances = {}
-  def __new__(class_, *args, **kwargs):
-    if class_ not in class_._instances:
-        class_._instances[class_] = super(Singleton, class_).__new__(class_, *args, **kwargs)
-    return class_._instances[class_]
+class Singleton:
+
+    def __init__(self, cls):
+        self._cls = cls
+
+    def Instance(self):
+        try:
+            return self._instance
+        except AttributeError:
+            self._instance = self._cls()
+            return self._instance
+
+    def __call__(self):
+        raise TypeError('Singletons must be accessed through `Instance()`.')
+
+    def __instancecheck__(self, inst):
+        return isinstance(inst, self._cls)
