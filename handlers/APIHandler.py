@@ -1,6 +1,7 @@
 from flask import Blueprint, Response, request, jsonify
 import json
 import basicauth
+from urllib.parse import unquote
 
 from .IGHandler import IGHandler
 
@@ -82,7 +83,7 @@ class APIHandler( ):
 
 	def _reauthenticate( request ):
 		print( 'Reauthenticating...' )
-		ig_settings = json.loads( request.headers.get( 'ig_settings' ) )
+		ig_settings = json.loads( unquote( request.headers.get( 'ig_settings' ) ) )
 		ig = IGHandler( ig_settings = ig_settings )
 		ig.authenticate( )
 		print( 'Reauthenticating... done!' )		
