@@ -1,11 +1,14 @@
 import time
 import requests
 import base64
+import re
+import os
 
 try:
     from instagram_private_api import (
         Client, ClientError, ClientLoginError,
         ClientCookieExpiredError, ClientLoginRequiredError,
+        ClientCheckpointRequiredError, ClientTwoFactorRequiredError,
         __version__ as client_version)
 except ImportError:
     import sys
@@ -13,6 +16,7 @@ except ImportError:
     from instagram_private_api import (
         Client, ClientError, ClientLoginError,
         ClientCookieExpiredError, ClientLoginRequiredError,
+        ClientCheckpointRequiredError, ClientTwoFactorRequiredError,
         __version__ as client_version)
     
 from .ActionHandler import ActionHandler
@@ -24,57 +28,93 @@ class IGHandler( ):
     _settings = None
     _auth = None
     _api = None
+    _two_factor_info = None
+    _checkpoint_info = None
 
     __user_info_cache = { }
     __followers_cache = { }
     __profile_pic_cache = { }
 
-    def __init__( self, ig_settings = None, auth = None ):
+    def __init__( self, ig_settings = None, auth = None, two_factor_info = None, checkpoint_info = None ):
         self._settings = ig_settings
         self._auth = auth
         self._api = None
+        self._two_factor_info = two_factor_info
+        self._checkpoint_info = checkpoint_info
 
     def authenticate( self ):
 
         try:
+
+            ig_settings = None
+
+            user = None
+            pw = None            
 
             if self._settings:
 
                 ig_settings = self._settings
                 ig_settings[ 'cookie' ] = ig_settings[ 'cookie' ].encode( errors = 'surrogateescape' )
 
-                self._api = Client( None, None, settings = ig_settings )
+            if self._auth:
+
+                if 'user' in self._auth:
+                    user = self._auth[ 'user' ]   
+
+                if 'pw' in self._auth:                    
+                    pw = self._auth[ 'pw' ]                
+
+            self._api = Client( user, pw, settings = ig_settings, login_immediately = bool( not self._two_factor_info and not self._checkpoint_info ) )
+
+            if self._two_factor_info:
+
+                two_factor_identifier = self._two_factor_info[ 'two_factor_identifier' ]
+                verification_code = self._two_factor_info[ 'verification_code' ].strip( )
+                self._api.login2fa( two_factor_identifier, verification_code )
+
+            elif self._checkpoint_info:
+
+                account_id = self._checkpoint_info[ 'account_id' ]
+                identifier = self._checkpoint_info[ 'identifier' ]
+                verification_code = self._checkpoint_info[ 'verification_code' ].strip( )
+                self._api.send_challenge( account_id, identifier, verification_code )
 
             else:
 
-                if self._auth:
+                pass
 
-                    if 'user' in self._auth and 'pw' in self._auth:
+        except ClientCheckpointRequiredError as e:
+            challenge_url = e.challenge_url
+            challenge_pattern = r'.*challenge/(?P<account_id>\d.*)/(?P<identifier>\w.*)/'   
+            match = re.search( challenge_pattern, challenge_url )
+            if not match:
+                raise ClientError( 'Unable to parse challenge' )          
 
-                        user = self._auth[ 'user' ]
-                        pw = self._auth[ 'pw' ]
+            checkpoint_info = match.groupdict( )
+            account_id = checkpoint_info[ 'account_id' ]
+            identifier = checkpoint_info[ 'identifier' ]                           
 
-                        self._api = Client( user, pw )
+            self._api.choose_confirm_method( account_id, identifier )
 
-                    else:
+            raise ClientCheckpointRequiredError( settings = e.settings, checkpoint_info = checkpoint_info )
 
-                        exit(9)
-
-                else:
-
-                    exit(9)
+        except ClientTwoFactorRequiredError as e:
+            raise                           
 
         except (ClientCookieExpiredError, ClientLoginRequiredError, ClientLoginError) as e:
-            print('ClientLoginError {0!s}'.format(e))
-            exit(9)
+            error_msg = 'ClientLoginError {0!s}'.format( e )
+            print( error_msg )
+            raise Exception( error_msg )
 
         except ClientError as e:
-            print('ClientError {0!s} (Code: {1:d}, Response: {2!s})'.format(e.msg, e.code, e.error_response))
-            exit(9)
+            error_msg = 'ClientError {0!s} (Code: {1:d}, Response: {2!s})'.format( e.msg, e.code, e.error_response )
+            print( error_msg )
+            raise Exception( error_msg )
 
         except Exception as e:
-            print('Unexpected Exception: {0!s}'.format(e))
-            exit(99)                
+            error_msg = 'Unexpected Exception: {0!s}'.format( e )
+            print( error_msg )
+            raise Exception( error_msg )               
 
     def enable_live( self ):
         ActionHandler.on_action( self, { 'mode' : 'ENABLE-LIVE' } )
