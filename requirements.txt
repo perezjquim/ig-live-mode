@@ -5,5 +5,5 @@ gunicorn==20.0.4
 git+https://github.com/perezjquim/instagram_private_api
 peewee==3.14.8
 psycopg2==2.9.3
-requests==2.18.4
+requests==2.20.0
 
